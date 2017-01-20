@@ -2,11 +2,15 @@
 
 int *FP;
 
+int A(int x, int y);
+int B(int x, int y);
+
 int main (int argc, char *argv[], char *env[])
 {
 	int a,b,c;
 	printf("enter main\n");
 	a=1; b=2; c=3;
+	printf("&a=%x &b=%x &c=%x\n",&a,&b,&c);
 	A(a,b);
 	printf("exit main\n");
 }
@@ -14,7 +18,8 @@ int main (int argc, char *argv[], char *env[])
 int A(int x, int y)
 {
 	int d,e,f;
-	printf("enter A\n");
+	printf("enter A!\n");	
+	printf("&d=%x &e=%x &f=%x\n",&d,&e,&f);
 	d=4; e=5; f=6;
 	B(d,e);
 	printf("exit A\n");
@@ -23,7 +28,8 @@ int A(int x, int y)
 int B(int x, int y)
 {
 	int u,v,w;
-	printf("enter B\n");
+	printf("enter B!\n");	
+	printf("&u=%x &v=%x &w=%x\n",&u,&v,&w);
 	u=7; v=8; w=9;
 	
 	//this asm call loads stack pointer into global "FP"
@@ -41,9 +47,10 @@ int B(int x, int y)
 	printf("\nprint the stack frame linked list:\n");
 	while(FP != 0)
 	{
-		printf("FP = %d\t*FP = %d\n",FP,*FP);
+		printf("%x -> ", FP);
 		FP = *FP;
 	}	
+	printf("\n");	
 
 	//print in HEX the address and contents of the stack from
 	//FP to the stack frame of main()
@@ -52,10 +59,14 @@ int B(int x, int y)
 	asm("movl %ebp, FP");
 
 	printf("\nprint stack address and contents:\n");
-	while(*FP != 0)
+	while(FP != 0)
 	{
-		printf("addr: %x\t\tcontents: %d\n",FP,*FP);
+		printf("addr: %x\t\tcontents: %x\n",FP,*FP);
 		FP -= 1;
+		if(*FP == 0)
+		{
+			break;
+		}
 	}
 
 	printf("exit B\n");
