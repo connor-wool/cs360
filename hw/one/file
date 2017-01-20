@@ -1,0 +1,28 @@
+enter main
+enter A
+enter B
+
+print the stack frame linked list:
+FP = -1078113384	*FP = -1078113336
+FP = -1078113336	*FP = -1078113288
+FP = -1078113288	*FP = 0
+
+print stack address and contents:
+addr: bfbd4b98		contents: -1078113336
+addr: bfbd4b94		contents: -1217622016
+addr: bfbd4b90		contents: -1217622016
+addr: bfbd4b8c		contents: 9
+addr: bfbd4b88		contents: 8
+addr: bfbd4b84		contents: 7
+addr: bfbd4b80		contents: 10
+addr: bfbd4b7c		contents: -1217618592
+addr: bfbd4b78		contents: -1217618592
+addr: bfbd4b74		contents: -1078113416
+addr: bfbd4b70		contents: 134514391
+addr: bfbd4b6c		contents: 134514071
+addr: bfbd4b68		contents: -1219099243
+addr: bfbd4b64		contents: -1217622016
+addr: bfbd4b60		contents: -1217622016
+exit B
+exit A
+exit main
