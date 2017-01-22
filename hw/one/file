@@ -1,28 +1,39 @@
 enter main
-enter A
-enter B
+&a=bfce6af0 &b=bfce6af4 &c=bfce6af8
+enter A!
+&d=bfce6ab0 &e=bfce6ab4 &f=bfce6ab8
+enter B!
+&u=bfce6a80 &v=bfce6a84 &w=bfce6a88
 
 print the stack frame linked list:
-FP = -1078113384	*FP = -1078113336
-FP = -1078113336	*FP = -1078113288
-FP = -1078113288	*FP = 0
+bfce6a98 -> bfce6ac8 -> bfce6b08 -> 
 
 print stack address and contents:
-addr: bfbd4b98		contents: -1078113336
-addr: bfbd4b94		contents: -1217622016
-addr: bfbd4b90		contents: -1217622016
-addr: bfbd4b8c		contents: 9
-addr: bfbd4b88		contents: 8
-addr: bfbd4b84		contents: 7
-addr: bfbd4b80		contents: 10
-addr: bfbd4b7c		contents: -1217618592
-addr: bfbd4b78		contents: -1217618592
-addr: bfbd4b74		contents: -1078113416
-addr: bfbd4b70		contents: 134514391
-addr: bfbd4b6c		contents: 134514071
-addr: bfbd4b68		contents: -1219099243
-addr: bfbd4b64		contents: -1217622016
-addr: bfbd4b60		contents: -1217622016
+addr: bfce6a80	cont: 7
+addr: bfce6a84	cont: 8
+addr: bfce6a88	cont: 9
+addr: bfce6a8c	cont: 8aefc400
+addr: bfce6a90	cont: b76ce000 ?
+addr: bfce6a94	cont: b76ce000 ?
+addr: bfce6a98	cont: bfce6ac8 //PC
+addr: bfce6a9c	cont: 80485d3
+addr: bfce6aa0	cont: 4
+addr: bfce6aa4	cont: 5
+addr: bfce6aa8	cont: bfce6ab4 //FP
+addr: bfce6aac	cont: bfce6ab8 //PC
+addr: bfce6ab0	cont: 4
+addr: bfce6ab4	cont: 5
+addr: bfce6ab8	cont: 6
+addr: bfce6abc	cont: 8aefc400		//extra?
+addr: bfce6ac0	cont: bfce6af0 //FP
+addr: bfce6ac4	cont: b7714918 		//maybe extra?
+addr: bfce6ac8	cont: bfce6b08 //PC
+addr: bfce6acc	cont: 8048543		//extra?
+addr: bfce6ad0	cont: 1
+addr: bfce6ad4	cont: 2
+addr: bfce6ad8	cont: bfce6af4 //FP
+addr: bfce6adc	cont: bfce6af8 //PC
+addr: bfce6ae0	cont: 1
 exit B
 exit A
 exit main

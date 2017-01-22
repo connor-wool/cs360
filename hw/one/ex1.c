@@ -11,6 +11,7 @@ int main (int argc, char *argv[], char *env[])
 	printf("enter main\n");
 	a=1; b=2; c=3;
 	printf("&a=%x &b=%x &c=%x\n",&a,&b,&c);
+	printf("&FP=%x\n", &FP);
 	A(a,b);
 	printf("exit main\n");
 }
@@ -56,17 +57,13 @@ int B(int x, int y)
 	//FP to the stack frame of main()
 	
 	//reset the value of stack frame pointer to FP	
-	asm("movl %ebp, FP");
+	asm("movl %esp, FP");
 
 	printf("\nprint stack address and contents:\n");
-	while(FP != 0)
+	while(*FP != 0)
 	{
-		printf("addr: %x\t\tcontents: %x\n",FP,*FP);
-		FP -= 1;
-		if(*FP == 0)
-		{
-			break;
-		}
+		printf("addr: %x\tcont: %x\n",FP,*FP);
+		FP += 1;
 	}
 
 	printf("exit B\n");
