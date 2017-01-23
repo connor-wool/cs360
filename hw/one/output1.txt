@@ -1,0 +1,49 @@
+enter main
+&a=bf984900 &b=bf984904 &c=bf984908
+&FP=804a02c
+enter A!
+&d=bf9848c0 &e=bf9848c4 &f=bf9848c8
+enter B!
+&u=bf984890 &v=bf984894 &w=bf984898
+
+print the stack frame linked list:
+bf9848a8 -> bf9848d8 -> bf984918 -> 
+
+print stack address and contents:
+addr: bf984890	cont: 7
+addr: bf984894	cont: 8
+addr: bf984898	cont: 9
+addr: bf98489c	cont: e223fc00
+addr: bf9848a0	cont: b77a7000
+addr: bf9848a4	cont: b77a7000
+addr: bf9848a8	cont: bf9848d8
+addr: bf9848ac	cont: 80485ee
+addr: bf9848b0	cont: 4
+addr: bf9848b4	cont: 5
+addr: bf9848b8	cont: bf9848c4
+addr: bf9848bc	cont: bf9848c8
+addr: bf9848c0	cont: 4
+addr: bf9848c4	cont: 5
+addr: bf9848c8	cont: 6
+addr: bf9848cc	cont: e223fc00
+addr: bf9848d0	cont: bf984900
+addr: bf9848d4	cont: b77ed918
+addr: bf9848d8	cont: bf984918
+addr: bf9848dc	cont: 804855e
+addr: bf9848e0	cont: 1
+addr: bf9848e4	cont: 2
+addr: bf9848e8	cont: bf984904
+addr: bf9848ec	cont: bf984908
+addr: bf9848f0	cont: 1
+addr: bf9848f4	cont: 0
+addr: bf9848f8	cont: bf9849cc
+addr: bf9848fc	cont: bf9849c4
+addr: bf984900	cont: 1
+addr: bf984904	cont: 2
+addr: bf984908	cont: 3
+addr: bf98490c	cont: e223fc00
+addr: bf984910	cont: b77a73dc
+addr: bf984914	cont: bf984930
+exit B
+exit A
+exit main

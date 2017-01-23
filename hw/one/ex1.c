@@ -1,12 +1,14 @@
 #include <stdio.h>
 
 int *FP;
+int *main_frame_ptr;
 
 int A(int x, int y);
 int B(int x, int y);
 
 int main (int argc, char *argv[], char *env[])
 {
+	asm("movl %ebp, main_frame_ptr");
 	int a,b,c;
 	printf("enter main\n");
 	a=1; b=2; c=3;
@@ -60,7 +62,7 @@ int B(int x, int y)
 	asm("movl %esp, FP");
 
 	printf("\nprint stack address and contents:\n");
-	while(*FP != 0)
+	while(FP < main_frame_ptr)
 	{
 		printf("addr: %x\tcont: %x\n",FP,*FP);
 		FP += 1;

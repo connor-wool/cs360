@@ -1,0 +1,49 @@
+enter main
+&a=bfb5d740 &b=bfb5d744 &c=bfb5d748
+&FP=804a02c
+enter A!
+&d=bfb5d700 &e=bfb5d704 &f=bfb5d708
+enter B!
+&u=bfb5d6d0 &v=bfb5d6d4 &w=bfb5d6d8
+
+print the stack frame linked list:
+bfb5d6e8 -> bfb5d718 -> bfb5d758 -> 
+
+print stack address and contents:
+addr: bfb5d6d0	cont: 7
+addr: bfb5d6d4	cont: 8
+addr: bfb5d6d8	cont: 9
+addr: bfb5d6dc	cont: 19c03100
+addr: bfb5d6e0	cont: b7727000
+addr: bfb5d6e4	cont: b7727000
+addr: bfb5d6e8	cont: bfb5d718
+addr: bfb5d6ec	cont: 80485ee
+addr: bfb5d6f0	cont: 4
+addr: bfb5d6f4	cont: 5
+addr: bfb5d6f8	cont: bfb5d704
+addr: bfb5d6fc	cont: bfb5d708
+addr: bfb5d700	cont: 4
+addr: bfb5d704	cont: 5
+addr: bfb5d708	cont: 6
+addr: bfb5d70c	cont: 19c03100
+addr: bfb5d710	cont: bfb5d740
+addr: bfb5d714	cont: b776d918
+addr: bfb5d718	cont: bfb5d758
+addr: bfb5d71c	cont: 804855e
+addr: bfb5d720	cont: 1
+addr: bfb5d724	cont: 2
+addr: bfb5d728	cont: bfb5d744
+addr: bfb5d72c	cont: bfb5d748
+addr: bfb5d730	cont: 4
+addr: bfb5d734	cont: 0
+addr: bfb5d738	cont: bfb5d818
+addr: bfb5d73c	cont: bfb5d804
+addr: bfb5d740	cont: 1
+addr: bfb5d744	cont: 2
+addr: bfb5d748	cont: 3
+addr: bfb5d74c	cont: 19c03100
+addr: bfb5d750	cont: b77273dc
+addr: bfb5d754	cont: bfb5d770
+exit B
+exit A
+exit main

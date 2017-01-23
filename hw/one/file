@@ -1,39 +1,49 @@
 enter main
-&a=bfce6af0 &b=bfce6af4 &c=bfce6af8
+&a=bfa077f0 &b=bfa077f4 &c=bfa077f8
+&FP=804a02c
 enter A!
-&d=bfce6ab0 &e=bfce6ab4 &f=bfce6ab8
+&d=bfa077b0 &e=bfa077b4 &f=bfa077b8
 enter B!
-&u=bfce6a80 &v=bfce6a84 &w=bfce6a88
+&u=bfa07780 &v=bfa07784 &w=bfa07788
 
 print the stack frame linked list:
-bfce6a98 -> bfce6ac8 -> bfce6b08 -> 
+bfa07798 -> bfa077c8 -> bfa07808 -> 
 
 print stack address and contents:
-addr: bfce6a80	cont: 7
-addr: bfce6a84	cont: 8
-addr: bfce6a88	cont: 9
-addr: bfce6a8c	cont: 8aefc400
-addr: bfce6a90	cont: b76ce000 ?
-addr: bfce6a94	cont: b76ce000 ?
-addr: bfce6a98	cont: bfce6ac8 //PC
-addr: bfce6a9c	cont: 80485d3
-addr: bfce6aa0	cont: 4
-addr: bfce6aa4	cont: 5
-addr: bfce6aa8	cont: bfce6ab4 //FP
-addr: bfce6aac	cont: bfce6ab8 //PC
-addr: bfce6ab0	cont: 4
-addr: bfce6ab4	cont: 5
-addr: bfce6ab8	cont: 6
-addr: bfce6abc	cont: 8aefc400		//extra?
-addr: bfce6ac0	cont: bfce6af0 //FP
-addr: bfce6ac4	cont: b7714918 		//maybe extra?
-addr: bfce6ac8	cont: bfce6b08 //PC
-addr: bfce6acc	cont: 8048543		//extra?
-addr: bfce6ad0	cont: 1
-addr: bfce6ad4	cont: 2
-addr: bfce6ad8	cont: bfce6af4 //FP
-addr: bfce6adc	cont: bfce6af8 //PC
-addr: bfce6ae0	cont: 1
+addr: bfa07780	cont: 7
+addr: bfa07784	cont: 8
+addr: bfa07788	cont: 9
+addr: bfa0778c	cont: b9eaaf00
+addr: bfa07790	cont: b7794000
+addr: bfa07794	cont: b7794000
+addr: bfa07798	cont: bfa077c8
+addr: bfa0779c	cont: 80485ee
+addr: bfa077a0	cont: 4
+addr: bfa077a4	cont: 5
+addr: bfa077a8	cont: bfa077b4
+addr: bfa077ac	cont: bfa077b8
+addr: bfa077b0	cont: 4
+addr: bfa077b4	cont: 5
+addr: bfa077b8	cont: 6
+addr: bfa077bc	cont: b9eaaf00
+addr: bfa077c0	cont: bfa077f0
+addr: bfa077c4	cont: b77da918
+addr: bfa077c8	cont: bfa07808
+addr: bfa077cc	cont: 804855e
+addr: bfa077d0	cont: 1
+addr: bfa077d4	cont: 2
+addr: bfa077d8	cont: bfa077f4
+addr: bfa077dc	cont: bfa077f8
+addr: bfa077e0	cont: 1
+addr: bfa077e4	cont: 0
+addr: bfa077e8	cont: bfa078bc
+addr: bfa077ec	cont: bfa078b4
+addr: bfa077f0	cont: 1
+addr: bfa077f4	cont: 2
+addr: bfa077f8	cont: 3
+addr: bfa077fc	cont: b9eaaf00
+addr: bfa07800	cont: b77943dc
+addr: bfa07804	cont: bfa07820
 exit B
 exit A
 exit main
