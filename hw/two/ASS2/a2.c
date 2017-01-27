@@ -78,101 +78,111 @@ void myprintf(char *format, ...)
 	}	
 }
 
-int enqueue(NODE **queue, NODE *p)
+NODE *makenode(int index)
 {
-	//enter p into q by priority
-	//handle edge case where queue is empty
-	if(*queue == 0){
-		*queue = p;
-	}
-	else{
-		NODE *current = *queue;
-		NODE *previous = *queue;
-		while(current->next != 0 && p->priority >= current->priority){
-			previous = current;
-			current++;
-		}
-		p->next = current;
-		previous->next = p;
-	}
-}
-
-NODE *dequeue(NODE **queue)
-{
-	//delete first node from queue, and return node
-	//with highest priority (if one exists)
-	if(*queue == 0)
-	{
-		return (NODE*)0;
-	}
-
-	NODE *current = *queue;
-	*queue = current->next;
-	return current;
-}
-
-NODE *make_random_node(int idNum)
-{
-	srand(time(NULL));
-	int r = rand() % 10;
 	NODE *p = (NODE*)malloc(sizeof(NODE));
 	p->next = 0;
-	p->name[0] = 'n';
-	p->name[1] = 'o';
-	p->priority = r;
+	p->priority = rand() % MAX_PRIORITY;	
+	sprintf(p->name,"node%d",index);
 	return p;
 }
 
-void print_node(NODE *p)
+void enqueue(NODE **queue, NODE *p)
 {
-	myprintf("printing node!\n");
-	myprintf("[name: %s priority: %d] -> ",p->name,p->priority);
+	//enter p into *q by priority
+	myprintf("(ENQUEUE)+begin enqueue\n");
+	if(*queue == 0) //the queue is currently empty
+	{
+		myprintf("(ENQUEUE) empty queue branch\n");
+		*queue = p;
+		myprintf("(ENQUEUE) front of queue [%x]\n",*queue);
+		myprintf("(ENQUEUE) back of p [%x]\n",p->next);
+	}
+	else //readyqueue is not empty, traverse based on priority
+	{
+		myprintf("(ENQUEUE) insert into exitsting queue\n");
+
+		NODE *current = *queue;
+		NODE *prev = current;
+		myprintf("(ENQUEUE) current[%x] previous[%x]\n",current,prev);
+	
+		if(p->priority > current->priority)
+		{
+			myprintf("(ENQUEUE) edge case: needs to be node 1\n");
+			*queue = p;
+			p->next = current;
+			myprintf("(ENQUEUE) new front [%x]\n",*queue);
+			myprintf("(ENQUEUE) new node 2 [%x]\n",current);
+		}
+		else{	
+			while(current != 0 && p->priority <= current->priority)
+			{
+				prev = current;
+				current = current->next;
+			}
+			//now we're either at back of node to enqueue to
+			prev->next = p;
+			myprintf("(ENQUEUE) prev->next now [%x]\n",prev->next);
+			if(current != 0)
+			{
+				p->next = current;
+			}
+			else
+			{
+				p->next = 0;
+			}
+			myprintf("(ENQUEUE) p->next now [%x]\n",p->next);
+		}
+	}
+	myprintf("(ENQUEUE)+finish enqueue\n\n");
 }
 
-void print_queue(NODE **queue)
+void printqueue(NODE *queue)
 {
-	myprintf("printing node queue!\n");
-	NODE *current = *queue;
-	while(current)
+	NODE *p = queue;
+	myprintf("\n(PQ) Start queue print\n");
+	myprintf("(PQ)  Start  address [%x]\n",p);
+	while(p != 0)
 	{
-		print_node(current);
-		current = current->next;
+		myprintf("(PQ) Current address [%x] -- ",p);
+		myprintf("[name:%s\tpri:%d] nxt(%x)->\n",p->name,p->priority,p->next);
+		p = p->next;
 	}
-	myprintf("\n");
+	myprintf("(PQ) Finish queue print\n\n");
 }
 
 int main(int argc, char *argv[], char *env[])
 {
 	printCredits();
-	myprintf("\n\n--------BEGIN SECTION 1--------\n");
-	myprintf("--------ARGC--------\n");
-	myprintf("argc: %d\n", argc);
-
-	myprintf("--------ARGV--------\n");
-	int i = 0;
-	while(argv[i])
-	{
-		myprintf("argv%d: %s\n",i,argv[i]);
-		i++;
+	
+	if(0){
+		myprintf("\n\n--------BEGIN SECTION 1--------\n");
+		myprintf("--------ARGC--------\n");
+		myprintf("argc: %d\n", argc);
+		myprintf("--------ARGV--------\n");
+		int i = 0;
+		while(argv[i])
+		{
+			myprintf("argv%d: %s\n",i,argv[i]);
+			i++;
+		}
+		myprintf("--------(BRACE YOURSELVES!)--------\n");
+		myprintf("--------ENV--------\n");
+		i = 0;
+		while(env[i])
+		{
+			myprintf("env%d: %s\n",i,env[i]);
+			i++;
+		}
+		myprintf("\n\n--------SECTION 1 COMPLETE--------\n");
 	}
-	myprintf("--------(BRACE YOURSELVES!)--------\n");
-	myprintf("--------ENV--------\n");
-	i = 0;
-	while(env[i])
-	{
-		myprintf("env%d: %s\n",i,env[i]);
-		i++;
+	if(1){
+		myprintf("--------BEGIN NODE QUEUE SECTION--------\n");
+		int z = 0;
+		while(1){
+			enqueue(&readyqueue, makenode(z));	
+			printqueue(readyqueue);
+			z++;
+		}
 	}
-
-	myprintf("\n\n--------SECTION 1 COMPLETE--------\n");
-	myprintf("--------BEGIN NODE QUEUE SECTION--------\n");
-	/**************
-	myprintf("making random node!\n");
-	NODE *p = make_random_node(1);
-	print_node(p);
-	myprintf("preparing enqueue!\n");
-	enqueue(&readyqueue, p);
-	print_queue(&readyqueue);
-	**************/
-
 }
