@@ -20,6 +20,7 @@ void printo(u32 x)
 	rprintbase(x,8);
 }
 
+//could this be done in 2 lines with printu?
 void printd(int x)
 {
 	if(x == 0){ putchar('0'); return; }
@@ -38,7 +39,6 @@ void printu(u32 x)
 	rprintbase(x,10);
 }
 
-//use putchar(char c) to write a string-print function
 void prints(char *s)
 {
 	while(*s){ putchar(*s++); }
@@ -89,30 +89,18 @@ NODE *makenode(int index)
 
 void enqueue(NODE **queue, NODE *p)
 {
-	//enter p into *q by priority
-	myprintf("(ENQUEUE)+begin enqueue\n");
 	if(*queue == 0) //the queue is currently empty
 	{
-		myprintf("(ENQUEUE) empty queue branch\n");
 		*queue = p;
-		myprintf("(ENQUEUE) front of queue [%x]\n",*queue);
-		myprintf("(ENQUEUE) back of p [%x]\n",p->next);
 	}
 	else //readyqueue is not empty, traverse based on priority
 	{
-		myprintf("(ENQUEUE) insert into exitsting queue\n");
-
 		NODE *current = *queue;
 		NODE *prev = current;
-		myprintf("(ENQUEUE) current[%x] previous[%x]\n",current,prev);
-	
 		if(p->priority > current->priority)
 		{
-			myprintf("(ENQUEUE) edge case: needs to be node 1\n");
 			*queue = p;
 			p->next = current;
-			myprintf("(ENQUEUE) new front [%x]\n",*queue);
-			myprintf("(ENQUEUE) new node 2 [%x]\n",current);
 		}
 		else{	
 			while(current != 0 && p->priority <= current->priority)
@@ -122,7 +110,6 @@ void enqueue(NODE **queue, NODE *p)
 			}
 			//now we're either at back of node to enqueue to
 			prev->next = p;
-			myprintf("(ENQUEUE) prev->next now [%x]\n",prev->next);
 			if(current != 0)
 			{
 				p->next = current;
@@ -131,10 +118,17 @@ void enqueue(NODE **queue, NODE *p)
 			{
 				p->next = 0;
 			}
-			myprintf("(ENQUEUE) p->next now [%x]\n",p->next);
 		}
 	}
-	myprintf("(ENQUEUE)+finish enqueue\n\n");
+}
+
+NODE *dequeue(NODE **queue)
+{
+	NODE *result = *queue;
+	if(*queue){
+		*queue = result->next;
+	}
+	return result;
 }
 
 void printqueue(NODE *queue)
@@ -144,8 +138,8 @@ void printqueue(NODE *queue)
 	myprintf("(PQ)  Start  address [%x]\n",p);
 	while(p != 0)
 	{
-		myprintf("(PQ) Current address [%x] -- ",p);
-		myprintf("[name:%s\tpri:%d] nxt(%x)->\n",p->name,p->priority,p->next);
+		myprintf("(PQ) Current address [%x] --\t",p);
+		myprintf("[name: %s\tpri:%d] nxt(%x)->\n",p->name,p->priority,p->next);
 		p = p->next;
 	}
 	myprintf("(PQ) Finish queue print\n\n");
@@ -155,7 +149,7 @@ int main(int argc, char *argv[], char *env[])
 {
 	printCredits();
 	
-	if(0){
+	if(1){
 		myprintf("\n\n--------BEGIN SECTION 1--------\n");
 		myprintf("--------ARGC--------\n");
 		myprintf("argc: %d\n", argc);
@@ -166,7 +160,6 @@ int main(int argc, char *argv[], char *env[])
 			myprintf("argv%d: %s\n",i,argv[i]);
 			i++;
 		}
-		myprintf("--------(BRACE YOURSELVES!)--------\n");
 		myprintf("--------ENV--------\n");
 		i = 0;
 		while(env[i])
@@ -178,11 +171,15 @@ int main(int argc, char *argv[], char *env[])
 	}
 	if(1){
 		myprintf("--------BEGIN NODE QUEUE SECTION--------\n");
+		myprintf("----Max priority value set to %d----\n",MAX_PRIORITY);
 		int z = 0;
 		while(1){
 			enqueue(&readyqueue, makenode(z));	
 			printqueue(readyqueue);
 			z++;
+			myprintf("Press any key to generate next node!\n");
+			myprintf("Press ^C to exit.\n");
+			char c = getchar();
 		}
 	}
 }
