@@ -1,4 +1,6 @@
 #include "type.h"
+//written by connor wool
+//January 27, 2017
 
 void rprintbase(u32 x, int BASE)
 {
