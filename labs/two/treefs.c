@@ -5,16 +5,17 @@ COMPLETION CHECKLIST
 [x]initialize
 [x]read input from user
 [x]tokenize input
-[ ]mkdir
+[x]mkdir
 [ ]rmdir
-[ ]cd
-[ ]ls
-[ ]pwd
-[ ]creat
+[/]cd
+[/]ls
+[x]pwd
+[x]creat
 [ ]rm
 [ ]save
 [ ]reload
-[ ]quit
+[x]quit
+[x]menu
 [ ]testing
 [ ]output formatting
 [ ]cleanup random debug statements
@@ -109,6 +110,24 @@ int menu(){
 
 int makeNode(NODE *parent, char *name, char file_type){
 	
+	//create the new baby node
+	NODE *baby = (NODE*) malloc(sizeof(NODE));
+	sprintf(baby->name,"%s",name);
+	baby->p_parent = parent;
+	baby->p_child = 0;
+	baby->p_sib = 0;
+	baby->n_type = file_type;
+
+	if(parent->p_child == 0){
+		parent->p_child = baby;
+	}
+	else{
+		NODE *temp = parent->p_child;
+		while(temp->p_sib){
+			temp = temp->p_sib;
+		}
+		temp->p_sib = baby;
+	}
 }
 
 //searches for a named file in a directory. Returns a pointer
@@ -182,8 +201,40 @@ NODE *search(char *path){
 
 }
 
+int my_cd(){
+	NODE *newloc = search(pathname);
+	if(newloc == 0){
+		printf("ERROR: path not found!\n");
+	}
+	else{
+		cwd = newloc;
+	}
+}
+
+int pwd_recursive(NODE *p){
+	if(p->p_parent == p){ // we're at root
+		printf("/");
+	}
+	else{
+		pwd_recursive(p->p_parent);
+		printf("%s/",p->name);
+	}
+}
+
 int my_pwd(){
+	pwd_recursive(cwd);
+	printf("\n");
+}
 	
+int my_ls(){
+	NODE *current = cwd;
+	NODE *working = cwd->p_child;
+	printf("type\tpath\n");
+	drawline();
+	while(working){
+		printf("%c\t%s\n",working->n_type,working->name);
+		working = working->p_sib;
+	}
 }
 
 int my_mkdir(){
@@ -212,10 +263,51 @@ int my_mkdir(){
 		return;
 	}
 	
-	
-	
-
+	makeNode(dir_node, base_name, 'D');
 	return;		
+}
+
+int my_creat(){
+	//break up pathname into dirname and basename
+        split_dir_base();
+
+        //check if path node exists
+        NODE *p = search(dir_name);
+        printf("p=[%x]\n",(u32)p);
+        if(p == 0){
+                printf("ERROR! DIRNAME %s DOES NOT EXIST!\n",dir_name);
+                return;
+        }
+        else if (p->n_type == 'F'){
+                printf("ERROR! DIRNAME %s EXISTS, BUT IS REG FILE (NOT DIR)\n",dir_name);
+                return;
+        }
+
+        //keep a reference to that parent before moving on
+        NODE *dir_node = p;
+
+        //check if base node already exists
+        p = search(pathname);
+        if(p != 0){
+                printf("ERROR! FILE AT %s ALREADY EXISTS!\n",pathname);
+                return;
+        }
+
+        makeNode(dir_node, base_name, 'F');
+        return;
+
+}
+
+void rsavehelper(NODE *current, FILE *fp){
+	fprintf(fp, "%c %s", current->n_type,current->name);
+	rsavehelper(current->p_child,fp);
+	rsavehelper(current->p_sib,fp);
+}
+
+void save(){
+	FILE *fp = fopen("savefile1","w+");
+	rsavehelper(root, fp);
+	fclose(fp);
 }
 
 int main()
@@ -232,6 +324,10 @@ int main()
 		int cmdID = findCmd(&command);
 		switch(cmdID){
 			case 0: my_mkdir();	break;
+			case 2: my_ls();	break;
+			case 3: my_cd();	break;
+			case 4: my_pwd();	break;
+			case 5: my_creat();	break;
 			case 7: run = 0;	break;
 			case 8: menu();		break;
 			case 9: menu();		break;
