@@ -1,5 +1,7 @@
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 /*************
 WRITTEN BY CONNOR WOOL FOR KC WANG'S CS 360 COURSE
@@ -10,10 +12,12 @@ SIMULATES SIMPLE UNIX FILE COMMANDS ON SAID FILESYSTEM
 
 //GLOBAL DEFINITIONS
 
+typedef unsigned int u32;
+
 typedef struct node{
 	char name[64];
 	char n_type;
-	NODE *p_child, *p_sib, *p_parent;
+	struct node *p_child, *p_sib, *p_parent;
 }NODE;
 
 char *cmd[] = {"mkdir","rmdir","ls","cd","pwd","creat","rm","quit","help","?","menu","reload","save",0};
@@ -22,12 +26,13 @@ char *cmd[] = {"mkdir","rmdir","ls","cd","pwd","creat","rm","quit","help","?","m
 
 NODE *root, *cwd;
 char line[128];				//holds user input line
-char command[16], pathname[64];		//holds cleaned user inputs
-char dirname[64], basename[64];		//hold important strings
+char command[64], pathname[64];		//holds cleaned user inputs
+char dir_name[64], base_name[64];		//hold important strings
 
 //HELPER FUNCTIONS
 
 //pass string containing command, returns index of command in an array
+/*********
 int findCmd(char *command)
 {
 	int i = 0;
@@ -39,3 +44,4 @@ int findCmd(char *command)
 	}
 	return -1;
 }
+*********/
