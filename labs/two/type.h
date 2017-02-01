@@ -31,17 +31,3 @@ char dir_name[64], base_name[64];		//hold important strings
 
 //HELPER FUNCTIONS
 
-//pass string containing command, returns index of command in an array
-/*********
-int findCmd(char *command)
-{
-	int i = 0;
-	while(cmd[i]){
-		if(strcmp(command,cmd[i]) == 0){
-			return i;
-		}
-		i++;
-	}
-	return -1;
-}
-*********/

@@ -107,52 +107,79 @@ int menu(){
 	drawline();
 }
 
-//returns either a pointer to the named node, or 0
-NODE *search(char *path, char *base, NODE *p){
+int makeNode(NODE *parent, char *name, char file_type){
 	
-	printf("(SEARCH)+begin search for `%s` on `%s`\n",base,path);
-	if(strcmp(path, "") == 0){
-		debug("(SEARCH) base case");
-		while(p){
-			if(strcmp(base,p->name) == 0){
-				return p;
-			}
-			p = p->p_sib;
-		}
-		return (NODE*)0;
-	}
-	
-	//if we didn't meet case 1, we have more path to travel
-	else{
-		debug("(SEARCH) recursion case");
-		char temp[128];
-		char target[128];
-		char newPath[128];
-		strcpy(temp,path);
-		//copy the name to search for into `target`
-		strcpy(target,strtok(temp, "/"));
-		//now that we have a target name, we can use that to
-		//create the next path string
-		int k = strlen(target) + 1;
-		int j = 0;
-		while(path[k]){
-			newPath[j] = path[k];
-			k++; j++;
-		}
-		newPath[j] = 0;
+}
 
-		printf("target=`%s`\n",target);
-		printf("newpath=`%s`\n",newPath);	
-		
-		while(p){
-                        if(strcmp(target, p->name) == 0){
-				return search(newPath,base,p);
-                        }
-                        p = p->p_sib;
-                }
-		return (NODE*)0;
+//searches for a named file in a directory. Returns a pointer
+//to the node if found, returns 0 otherwise.
+NODE *search_in_dir(NODE *start, char *target_name){
+	NODE *n = start->p_child;
+	while(n){
+		if(strcmp(n->name,target_name) == 0){
+			return n;
+		}
+		n = n->p_sib;
 	}
-	debug("(SEARCH)+end (ask:why am i seeing this?)");
+	return (NODE*)0;
+}
+
+/* Recursively search through directories for a specific filename*/
+NODE *rsearch(char *path, NODE *current){
+	char test[128], target[64];
+	NODE *np = 0;
+	strcpy(test,path);
+	
+	/*if this first case is true, we can treat `path` as just the name
+ 	of the node that we're searching for.*/
+	if(strcmp(dirname(test),".") == 0){
+		np = current->p_child;
+		while(np){
+			if(strcmp(np->name,path) == 0){
+                        	return np;
+                	}
+                	np = np->p_sib;
+		}
+		return (NODE*)0; //return 0 if not found, no existo el nodo
+	}
+
+	/* This is the case where we still have one or more directories
+	to search down through. Set target to be the name of next file
+	to look for, increment path to point after first `/` */	
+	else{
+		strcpy(test,path);
+		strcpy(target,strtok(test,"/"));
+		printf("path before mod `%s`\n",path);
+		path += strlen(target) + 1;	
+		printf("path after mod `%s`\n",path);
+
+		//search for the next node in the path
+		np = current->p_child;
+                while(np){
+                        if(strcmp(np->name,path) == 0){
+                                return rsearch(path, np);
+                        }
+                        np = np->p_sib;
+                }
+                return (NODE*)0; //return 0 if not found, no existo el nodo
+
+	}
+}
+
+NODE *search(char *path){
+	NODE *start = 0;
+	if(strcmp(path,"/") == 0){
+		return root;
+	}
+	if(path[0] == '/'){
+		start = root;
+		path++;
+	}
+	else{
+		start = cwd;
+	}
+	return rsearch(path, start);
+
 }
 
 int my_pwd(){
@@ -162,18 +189,33 @@ int my_pwd(){
 int my_mkdir(){
 	//break up pathname into dirname and basename
 	split_dir_base();
+	
 	//check if path node exists
-	char temp[64];
-	char cp1[64],cp2[64];
-	strcpy(temp,dir_name);
-	strcpy(cp1,dirname(temp));
-	strcpy(temp,dir_name);
-	strcpy(cp2,basename(temp));
-	printf("cp1=`%s` cp2=`%s`\n",cp1,cp2);
-
-	NODE *p = search(cp1,cp2,root);
+	NODE *p = search(dir_name);
 	printf("p=[%x]\n",(u32)p);
-		
+	if(p == 0){
+		printf("ERROR! DIRNAME %s DOES NOT EXIST!\n",dir_name);
+		return;
+	}
+	else if (p->n_type == 'F'){
+		printf("ERROR! DIRNAME %s EXISTS, BUT IS REG FILE (NOT DIR)\n",dir_name);
+		return;
+	}
+
+	//keep a reference to that parent before moving on
+	NODE *dir_node = p;	
+
+	//check if base node already exists
+	p = search(pathname);
+	if(p != 0){
+		printf("ERROR! FILE AT %s ALREADY EXISTS!\n",pathname);
+		return;
+	}
+	
+	
+	
+
+	return;		
 }
 
 int main()
