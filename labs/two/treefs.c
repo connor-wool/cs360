@@ -6,13 +6,13 @@ COMPLETION CHECKLIST
 [x]read input from user
 [x]tokenize input
 [x]mkdir
-[ ]rmdir
+[x]rmdir
 [/]cd
 [/]ls
 [x]pwd
 [x]creat
-[ ]rm
-[ ]save
+[x]rm
+[x]save
 [ ]reload
 [x]quit
 [x]menu
@@ -27,10 +27,7 @@ void debug(char *s){
 
 //malloc, fill, and place root node '/'
 int initialize(){
-	debug("(INIT)+begin");
-	printf("(INIT) root=[%x] cwd=[%x]\n",(u32)root,(u32)cwd);
-	debug("(INIT) create and place root node");
-
+	printf("Initializing root node... ");
 	NODE *p = (NODE*) malloc(sizeof(NODE));
 	sprintf(p->name, "/");
 	p->n_type = 'D';
@@ -39,24 +36,17 @@ int initialize(){
 	p->p_parent = p;
 	root = p;
 	cwd = root;
-
-        printf("(INIT) root=[%x] cwd=[%x]\n",(u32)root,(u32)cwd);
-	debug("(INIT)+end");
+	printf("done.\n");
 }
 
 int get_input(){
-	printf("What is my purpose?: ");
+	printf(">>> CMD: ");
 	fgets(&line, 128, stdin);
 	line[strlen(line) - 1] = 0;
-	printf("INPUT: %s\n",line);
-	if(strcmp(line,"you pass butter") == 0){
-		printf("Oh my god.......\n");
-	}
 }
 
 int tokenize_input(){
 	sscanf(line, "%s %s", &command, &pathname);
-	printf("(TOKENIZE) cmd=`%s` path=`%s`\n",command,pathname);
 }
 
 int findCmd(){
@@ -72,7 +62,7 @@ int findCmd(){
 
 int drawline()
 {
-	int number = 30;
+	int number = 40;
 	for(int i = 0; i < number; i++){
 		printf("=");
 	} 
@@ -82,14 +72,12 @@ int drawline()
 //assumes that "pathname" is non-empty and current
 //after execution, dir_name and base_name should be set properly
 int split_dir_base(){
-	debug("(SPLIT)+begin");
 	char temp[64];
 	strcpy(temp,pathname);
 	strcpy(dir_name,dirname(temp));
 	strcpy(temp,pathname);
 	strcpy(base_name,basename(temp));
 	printf("(SPLIT) base=`%s` path=`%s`\n",base_name,dir_name);
-	debug("(SPLIT)+end");
 }
 
 int menu(){
@@ -118,6 +106,8 @@ int makeNode(NODE *parent, char *name, char file_type){
 	baby->p_sib = 0;
 	baby->n_type = file_type;
 
+	printf("new node: ['%s' %c]\n",baby->name,baby->n_type);
+	
 	if(parent->p_child == 0){
 		parent->p_child = baby;
 	}
@@ -130,6 +120,7 @@ int makeNode(NODE *parent, char *name, char file_type){
 	}
 }
 
+/*
 //searches for a named file in a directory. Returns a pointer
 //to the node if found, returns 0 otherwise.
 NODE *search_in_dir(NODE *start, char *target_name){
@@ -142,6 +133,7 @@ NODE *search_in_dir(NODE *start, char *target_name){
 	}
 	return (NODE*)0;
 }
+*/
 
 /* Recursively search through directories for a specific filename*/
 NODE *rsearch(char *path, NODE *current){
@@ -152,6 +144,12 @@ NODE *rsearch(char *path, NODE *current){
 	/*if this first case is true, we can treat `path` as just the name
  	of the node that we're searching for.*/
 	if(strcmp(dirname(test),".") == 0){
+		if(strcmp(path,".") == 0){
+			return current;
+		}
+		if(strcmp(path,"..") == 0){
+			return current->p_parent;
+		}
 		np = current->p_child;
 		while(np){
 			if(strcmp(np->name,path) == 0){
@@ -227,6 +225,8 @@ int my_pwd(){
 }
 	
 int my_ls(){
+	drawline();
+	printf("\t\tLS\n");
 	NODE *current = cwd;
 	NODE *working = cwd->p_child;
 	printf("type\tpath\n");
@@ -235,9 +235,13 @@ int my_ls(){
 		printf("%c\t%s\n",working->n_type,working->name);
 		working = working->p_sib;
 	}
+	drawline();
+	return 0;
 }
 
 int my_mkdir(){
+	printf("\t\tMKDIR\n");
+	drawline();
 	//break up pathname into dirname and basename
 	split_dir_base();
 	
@@ -264,23 +268,95 @@ int my_mkdir(){
 	}
 	
 	makeNode(dir_node, base_name, 'D');
-	return;		
+	drawline();
+	return 0;		
+}
+
+int deleteNode(NODE *del){
+	
+	//talk to the deletee's parent
+	NODE *parent = del->p_parent;
+	
+	//if first child of parent, remove and shift pointers
+	if(parent->p_child == del){
+		parent->p_child = del->p_sib;
+		return 0;
+	}
+
+	//otherwise search siblings for reference
+	NODE *current = parent->p_child;
+	while(current->p_sib != del){
+		current = current->p_sib;
+	}
+	
+	//now the current's sibling pointer is del
+	current->p_sib = del->p_sib;
+	
+	//let del be free!
+	free(del);
+}
+
+int my_rmdir(){
+	drawline();
+	printf("\t\tRMDIR\n");
+	
+	//check if dir exists
+	NODE *p = search(pathname);
+	printf("p=[%x]\n",(u32)p);
+	if(p == 0){
+		printf("Error: specified directory does not exist\n");
+		return 0;
+	}
+
+	//check if node is a directory
+	if(p->n_type == 'F'){
+		printf("Error: speficied path is not a directory\n");
+		return 0;
+	}	
+	deleteNode(p);
+	drawline();
+	return 0;
+}
+
+int my_rm(){
+	drawline();
+	printf("\t\tRM\n");
+	
+	//check if a file exists
+	NODE *del = search(pathname);
+	printf("p=[%x]\n",(u32)del);
+	if(del == 0){
+		printf("Error: specified file does not exist\n");
+		return 0;
+	}
+
+	//check if node is a file
+	if(del->n_type == 'D'){
+		printf("Error: specified node is a directory\n");
+		return 0;
+	}
+	deleteNode(del);
+	drawline();
+	return 0;
 }
 
 int my_creat(){
 	//break up pathname into dirname and basename
-        split_dir_base();
+        drawline();
+	printf("\t\tCREAT\n");
+
+	split_dir_base();
 
         //check if path node exists
         NODE *p = search(dir_name);
         printf("p=[%x]\n",(u32)p);
         if(p == 0){
                 printf("ERROR! DIRNAME %s DOES NOT EXIST!\n",dir_name);
-                return;
+                return 1;
         }
         else if (p->n_type == 'F'){
                 printf("ERROR! DIRNAME %s EXISTS, BUT IS REG FILE (NOT DIR)\n",dir_name);
-                return;
+                return 1;
         }
 
         //keep a reference to that parent before moving on
@@ -290,28 +366,65 @@ int my_creat(){
         p = search(pathname);
         if(p != 0){
                 printf("ERROR! FILE AT %s ALREADY EXISTS!\n",pathname);
-                return;
+                return 1;
         }
 
         makeNode(dir_node, base_name, 'F');
-        return;
+        drawline();
+	return 0 ;
 
 }
 
-void rsavehelper(NODE *current, FILE *fp){
-	fprintf(fp, "%c %s", current->n_type,current->name);
-	rsavehelper(current->p_child,fp);
-	rsavehelper(current->p_sib,fp);
+void rsavehelper(NODE *current, char *buf, char *loc, FILE *fp){
+	if(current == 0){
+		return;
+	}
+
+	//push a copy of own name onto buf (basically a stack)
+	strcpy(loc,current->name);
+	
+	//now print the current buf
+	fprintf(fp, "%c %s\n", current->n_type, buf);
+	printf("node: `%s`\tbuf: `%s`\n", current->name, buf);
+
+	//now go to children while own name on stack
+	if(current == root){
+		rsavehelper(current->p_child, buf, loc+strlen(current->name),fp);
+	}
+	else{
+		strcpy(loc+strlen(current->name), "/");
+		rsavehelper(current->p_child, buf, loc + strlen(current->name)+1, fp);
+	}
+
+	//remove own name before moving to siblings
+	*loc = 0;
+
+	//now print siblings
+	rsavehelper(current->p_sib, buf, loc, fp);
 }
 
 void save(){
+	drawline();
+	printf("\t\tSAVE FS\n");
 	FILE *fp = fopen("savefile1","w+");
-	rsavehelper(root, fp);
+	char printbuf[1000];
+	rsavehelper(root, &printbuf, &printbuf, fp);
 	fclose(fp);
+	drawline();
+}
+
+void reload(){
+	//read in file
+	//if starts with F, use 'creat' and pathname
+	//if starts iwht D, use 'mkdir' and pathname
+	//go until file is empty
 }
 
 int main()
 {
+	printf("PROGRAM: CS 360, LAB 2, (File System Simulator)\n");
+	printf("AUTHOR: Connor Wool (Feb 2, 2017)\n");
+	printf("--------> PROGRAM RUN -------->\n\n");
 	int run = 1;
 	initialize();
 	while(run){
@@ -324,14 +437,17 @@ int main()
 		int cmdID = findCmd(&command);
 		switch(cmdID){
 			case 0: my_mkdir();	break;
+			case 1: my_rmdir();	break;
 			case 2: my_ls();	break;
 			case 3: my_cd();	break;
 			case 4: my_pwd();	break;
 			case 5: my_creat();	break;
+			case 6: my_rm();	break;
 			case 7: run = 0;	break;
 			case 8: menu();		break;
 			case 9: menu();		break;
 			case 10: menu();	break;
+			case 12: save();	break;
 			default: printf("found nothing\n"); break;
 		}
 	}
