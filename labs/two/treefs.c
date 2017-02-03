@@ -7,18 +7,18 @@ COMPLETION CHECKLIST
 [x]tokenize input
 [x]mkdir
 [x]rmdir
-[/]cd
+[x]cd
 [/]ls
 [x]pwd
 [x]creat
 [x]rm
 [x]save
-[ ]reload
+[!]reload
 [x]quit
 [x]menu
-[ ]testing
-[ ]output formatting
-[ ]cleanup random debug statements
+[!]testing
+[!]output formatting
+[!]cleanup random debug statements
 *********/
 
 void debug(char *s){
@@ -137,6 +137,7 @@ NODE *search_in_dir(NODE *start, char *target_name){
 
 /* Recursively search through directories for a specific filename*/
 NODE *rsearch(char *path, NODE *current){
+	printf("(RSEARCH)+begin for `%s`\n",path);
 	char test[128], target[64];
 	NODE *np = 0;
 	strcpy(test,path);
@@ -145,18 +146,22 @@ NODE *rsearch(char *path, NODE *current){
  	of the node that we're searching for.*/
 	if(strcmp(dirname(test),".") == 0){
 		if(strcmp(path,".") == 0){
+			printf("(RSEARCH) return because `.`\n");
 			return current;
 		}
 		if(strcmp(path,"..") == 0){
+			printf("(RSEARCH) return because `..`\n");
 			return current->p_parent;
 		}
 		np = current->p_child;
 		while(np){
 			if(strcmp(np->name,path) == 0){
+				printf("(RSEARCH) return because match\n");
                         	return np;
                 	}
                 	np = np->p_sib;
 		}
+		printf("(RSEARCH) return because NO match\n");
 		return (NODE*)0; //return 0 if not found, no existo el nodo
 	}
 
@@ -178,12 +183,17 @@ NODE *rsearch(char *path, NODE *current){
                         }
                         np = np->p_sib;
                 }
-                return (NODE*)0; //return 0 if not found, no existo el nodo
+		printf("(RSEARCH) return because NO match at mid-level\n");
+                printf("(RSEARCH) search was trying to match `%s`\n",target);
+		return (NODE*)0; //return 0 if not found, no existo el nodo
 
 	}
 }
 
 NODE *search(char *path){
+	
+	printf("(SEARCH DRIVER)+begin for `%s`\n", path);
+
 	NODE *start = 0;
 	if(strcmp(path,"/") == 0){
 		return root;
@@ -414,10 +424,15 @@ void save(){
 }
 
 void reload(){
+	drawline();
+	printf("\t\tRELOAD FS FROM FILE\n");
+	
 	//read in file
 	//if starts with F, use 'creat' and pathname
 	//if starts iwht D, use 'mkdir' and pathname
 	//go until file is empty
+	
+	drawline();
 }
 
 int main()
@@ -447,6 +462,7 @@ int main()
 			case 8: menu();		break;
 			case 9: menu();		break;
 			case 10: menu();	break;
+			case 11: reload();	break;
 			case 12: save();	break;
 			default: printf("found nothing\n"); break;
 		}
