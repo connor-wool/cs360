@@ -1,66 +1,117 @@
 #include "type.h"
 
+//0's memory for tokens and line
 int mem_wipe(){
         memset(line, 0, STR_LEN);
         for(int z = 0; z < MAX_TOK; z++){
-                memset(tokens[z], 0, STR_LEN);
-        }
+                memset(tokens[z], 0, STR_LEN); }
 }
 
+int tok_paths(){
+	printf("--> Tokenizing path string\n");
+	char *tok_ptr, all_paths[STR_LEN];
+	strcpy(all_paths, getenv("PATH"));
+	
+	if(DEBUGGING){ printf("--> $PATH= '%s'\n",all_paths); }
+
+	int tok_list_ctrl = 0;
+
+        tok_ptr = strtok((char*restrict)all_paths, (const char*restrict)":");
+        while(tok_ptr){
+                strcpy(path_tokens[tok_list_ctrl++], tok_ptr);
+                tok_ptr = strtok(0, (const char * restrict)":"); }
+
+	//debugging - print list of tokens
+	if(DEBUGGING){
+		printf("ALL PATH TOKENS:\n");
+        	int z = 0;
+        	while(*path_tokens[z]){
+               		printf("token: '%s'\n", path_tokens[z++]); } }
+}
+
+//initialize memory spaces and zero all bytes
 int init(){
-	printf("Running init process, pointing tokens to memory\n");
+	nprintc('=',50,1);
+	printf("\t\tCONNOR'S COOL SHELL\n");
+	nprintc('=',50,1);
+	printf("--> Running init process\n--> Malloc mem for tokens\n");
+	
 	for(int z = 0; z < MAX_TOK; z++){
 		tokens[z] = (char*)malloc(sizeof(char) * STR_LEN);
-	}
-	printf("Initialize memory to 0 byte\n");
-	mem_wipe();
+		path_tokens[z] = (char*)malloc(sizeof(char) * STR_LEN); }
+	
+	printf("--> Initialize all memory to byte '0'\n");
+	mem_wipe(); tok_paths();
 }
 
+//get a line of input from the user
 int user_input(){
 	char cwdtmp[STR_LEN], hosttmp[STR_LEN];
 	getcwd(cwdtmp, STR_LEN);
 	gethostname(hosttmp, STR_LEN);
 	printf("%s:%s$ ", hosttmp, cwdtmp);
 	fgets(line, STR_LEN, stdin);
-	line[strlen(line)-1] = 0;		//wipe newline from input
+	line[strlen(line)-1] = 0; //remove \n from end of input string
 }
 
+//process a string to tokens
 int process_string(){
-	
-	fprintf(stderr, "starting process_string function call\n");
-	
-	//local variables
 	char copy[STR_LEN], slice[STR_LEN];
-	int tok_list_ctrl = 0;
-	char *tok_ptr;	
+	int tok_list_ctrl = 0; char *tok_ptr;	
 
-	fprintf(stderr, "variables initialized\n");
-	
 	strcpy(copy, line);
-
-	fprintf(stderr, "copied string\n");
-
-	tok_ptr = strtok(&copy, ' ');
-	
-	fprintf(stderr, "Entering while loop of process statement\n");
-
+	tok_ptr = strtok((char * restrict)copy, (const char * restrict)" ");
 	while(tok_ptr){
-		strcpy(tokens[tok_list_ctrl], slice);
-		tok_list_ctrl++;
-		strcpy(slice, strtok(0, (const char * restrict)' '));
-	}
+		strcpy(tokens[tok_list_ctrl++], tok_ptr);
+		tok_ptr = strtok(0, (const char * restrict)" "); }
+
+	if(DEBUGGING){	
+		//debugging - print list of tokens
+		int z = 0;
+		while(*tokens[z]){
+			printf("token: '%s'\n", tokens[z]);
+			z++; } }
+}
+
+int check_cd(){
+	if(strcmp(tokens[0], "cd") == 0){
+		if(strcmp(tokens[1], "") != 0){
+			chdir((const char *)tokens[1]); }
+		else{
+			chdir((const char *)getenv((const char*)"HOME")); }
+		return 1; }
+	return 0;
+}
+
+int check_exit(){
+	if(strcmp(tokens[0], "exit") == 0){
+		exit(0); return 1; }
+	return 0;
+}
+
+int handle_fork(){
+	char exec_string[STR_LEN];
+	int pid, ppid;
+	
+	//create the exec string from path and args
+	//make fork call
+	//check which process is running (child/parent)
+	//make exec call in child, have parent wait
+	
+	//initially let's assume no pipes
 	
 }
 
 int main(int argc, char *argv[], char *env[])
 {
 	init();
-	printf("Connor's cool shell, wow!\n");
-	while(active){
-		mem_wipe();
-		user_input();
-		process_string();
-		printf("input: '%s'\n", line);
+	while(1){
+		mem_wipe();			//reset mem space
+		user_input();			//get input
+		process_string();		//tokenize input
+		printf("input: '%s'\n", line);	//DEBUG: print input
+		if(check_cd()){ continue; } //check to run cd
+		if(check_exit()) { break; } //this isn't really necessary
 	}
 	return 0;
 }
