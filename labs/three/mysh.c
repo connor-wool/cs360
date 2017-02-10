@@ -84,22 +84,74 @@ int check_cd(){
 }
 
 int check_exit(){
+	if(DEBUGGING){ 
+		printf("checking for exit case\n"); 
+		printf("token[0] = `%s`\n",tokens[0]); 
+		printf("strcmp(tokens[0], `exit`) == %d\n", strcmp(tokens[0], 			"exit")); }
 	if(strcmp(tokens[0], "exit") == 0){
 		exit(0); return 1; }
 	return 0;
 }
 
-int handle_fork(){
-	char exec_string[STR_LEN];
-	int pid, ppid;
+int handle_fork(char *env){
+	if(DEBUGGING) { printf("Starting handle_fork()\n"); }
 	
-	//create the exec string from path and args
+	char cmd_path[STR_LEN];
+	char *arg_v_arr[MAX_TOK];
+	int pid, status, exec_err;
+
+	//make the args array
+	int z = 1;
+	arg_v_arr[0] = (char*)malloc(sizeof(char) * STR_LEN);
+	while(*tokens[z]){ //copy arg tokens to new argv array
+		arg_v_arr[z] = (char*)malloc(sizeof(char) * STR_LEN);
+		strcpy(arg_v_arr[z], tokens[z]);
+	}
+	if(DEBUGGING){ //print out the argv array
+		z = 0;
+		while(*arg_v_arr[z]){
+			printf("Arg%d: `%s`\n", z, arg_v_arr[z]); 
+		}
+	}
+
 	//make fork call
-	//check which process is running (child/parent)
-	//make exec call in child, have parent wait
-	
-	//initially let's assume no pipes
-	
+	printf("PAPA %d: I FORK A CHILD!\n",getpid());
+	pid = fork();	
+
+	//check which process we are (child/parent)		
+	if(pid){ //parent process
+		printf("PAPA %d: I WAIT FOR CHILD TO DIE! %s\n",getpid(),sleepy);
+		wait(&status); 
+		printf("PAPA %d: I BURY MY CHILD'S BODY!\n", getpid());
+	}
+	else{
+		printf("CHILD %d STARTS DOING WORK! %s\n",getpid(),work_msg);
+		//create testpath 1, then run while loop
+		//once the exec call actually happens, we're done
+		strcat(cmd_path, path_tokens[0]);
+		strcat(cmd_path, "/");
+		strcat(cmd_path, tokens[0]);
+		printf("PATH: `%s`\n", cmd_path);
+		strcpy(arg_v_arr[0], cmd_path);
+		exec_err = execve(cmd_path, arg_v_arr, env);	
+		printf("CHILD %d exec code: %d\n",getpid(),exec_err);
+
+		//retry inside a while loop
+		z = 1;
+		while(*path_tokens[z]){
+			memset(cmd_path, 0, STR_LEN);
+			strcat(cmd_path, path_tokens[z]);
+                	strcat(cmd_path, "/");
+                	strcat(cmd_path, tokens[0]);
+                	printf("PATH: `%s`\n", cmd_path);
+                	exec_err = execve(cmd_path, arg_v_arr, env);     
+                	printf("CHILD %d exec code: %d\n",getpid(),exec_err);
+			z++;
+		}
+
+		printf("CHILD %d: I'M DEAD! %s\n", getpid(),i_die);
+		exit(0);	
+	}
 }
 
 int main(int argc, char *argv[], char *env[])
@@ -112,6 +164,7 @@ int main(int argc, char *argv[], char *env[])
 		printf("input: '%s'\n", line);	//DEBUG: print input
 		if(check_cd()){ continue; } //check to run cd
 		if(check_exit()) { break; } //this isn't really necessary
+		handle_fork(env);
 	}
 	return 0;
 }
