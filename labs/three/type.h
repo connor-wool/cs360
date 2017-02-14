@@ -8,7 +8,7 @@
 
 #define STR_LEN 256
 #define MAX_TOK 64
-#define DEBUGGING 0 
+#define DEBUGGING 1 
 
 char *path_tokens[MAX_TOK];	//hold tokens with paths
 char line[STR_LEN];		//hold user input line

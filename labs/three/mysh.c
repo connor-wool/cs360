@@ -94,6 +94,7 @@ int check_exit(){
 }
 
 int handle_fork(char *env){
+
 	if(DEBUGGING) { printf("Starting handle_fork()\n"); }
 	
 	char cmd_path[STR_LEN];
@@ -101,16 +102,25 @@ int handle_fork(char *env){
 	int pid, status, exec_err;
 
 	//make the args array
-	int z = 1;
-	arg_v_arr[0] = (char*)malloc(sizeof(char) * STR_LEN);
-	while(*tokens[z]){ //copy arg tokens to new argv array
-		arg_v_arr[z] = (char*)malloc(sizeof(char) * STR_LEN);
-		strcpy(arg_v_arr[z], tokens[z]);
+	printf("Making args array!\n");
+	printf("initializing memory for all args array slots\n");
+	for(int i = 0; i < MAX_TOK; i++){
+		arg_v_arr[i] = (char*)malloc(sizeof(char) * STR_LEN);
 	}
+
+	int z = 0;
+	while(*tokens[z]){ //copy arg tokens to new argv array
+		strcpy(arg_v_arr[z], tokens[z]);
+		z++;
+	}
+
+
+	printf("finished making args array!\n");
 	if(DEBUGGING){ //print out the argv array
 		z = 0;
 		while(*arg_v_arr[z]){
 			printf("Arg%d: `%s`\n", z, arg_v_arr[z]); 
+			z++;
 		}
 	}
 
@@ -128,25 +138,19 @@ int handle_fork(char *env){
 		printf("CHILD %d STARTS DOING WORK! %s\n",getpid(),work_msg);
 		//create testpath 1, then run while loop
 		//once the exec call actually happens, we're done
+		cmd_path[0] = 0;
 		strcat(cmd_path, path_tokens[0]);
 		strcat(cmd_path, "/");
 		strcat(cmd_path, tokens[0]);
-		printf("PATH: `%s`\n", cmd_path);
-		strcpy(arg_v_arr[0], cmd_path);
-		exec_err = execve(cmd_path, arg_v_arr, env);	
-		printf("CHILD %d exec code: %d\n",getpid(),exec_err);
-
 		//retry inside a while loop
-		z = 1;
-		while(*path_tokens[z]){
+		z = 0;
+		while(execl(cmd_path,arg_v_arr[0]) && *path_tokens[z]){ 
+			z++;			
+			printf("%d failed on: `%s`\n",z, cmd_path);
 			memset(cmd_path, 0, STR_LEN);
 			strcat(cmd_path, path_tokens[z]);
                 	strcat(cmd_path, "/");
                 	strcat(cmd_path, tokens[0]);
-                	printf("PATH: `%s`\n", cmd_path);
-                	exec_err = execve(cmd_path, arg_v_arr, env);     
-                	printf("CHILD %d exec code: %d\n",getpid(),exec_err);
-			z++;
 		}
 
 		printf("CHILD %d: I'M DEAD! %s\n", getpid(),i_die);
@@ -158,6 +162,7 @@ int main(int argc, char *argv[], char *env[])
 {
 	init();
 	while(1){
+		printf("Starting new shell loop!\n");
 		mem_wipe();			//reset mem space
 		user_input();			//get input
 		process_string();		//tokenize input

@@ -1,4 +1,4 @@
 all:
-	gcc -m32 mysh.c
+	gcc -g -m32 mysh.c
 clean:
 	rm a.out
