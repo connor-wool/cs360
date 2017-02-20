@@ -102,8 +102,11 @@ int handle_fork(char *env){
 	int pid, status, exec_err;
 
 	//make the args array
-	printf("Making args array!\n");
-	printf("initializing memory for all args array slots\n");
+	if(DEBUGGING){
+		printf("Making args array!\n");
+		printf("initializing memory for all args array slots\n");
+	}
+
 	for(int i = 0; i < MAX_TOK; i++){
 		arg_v_arr[i] = (char*)malloc(sizeof(char) * STR_LEN);
 	}
@@ -113,43 +116,55 @@ int handle_fork(char *env){
 		strcpy(arg_v_arr[z], tokens[z]);
 		z++;
 	}
+	arg_v_arr[z] = 0;
 
-
-	printf("finished making args array!\n");
-	if(DEBUGGING){ //print out the argv array
+	if(DEBUGGING){ 
+		printf("finished making args array!\n");
 		z = 0;
-		while(*arg_v_arr[z]){
+		while(arg_v_arr[z]){
 			printf("Arg%d: `%s`\n", z, arg_v_arr[z]); 
 			z++;
 		}
+		printf("finished printing args array!\n");
 	}
 
 	//make fork call
-	printf("PAPA %d: I FORK A CHILD!\n",getpid());
+	printf("PAPA #%x: I FORK A CHILD!\n",getpid());
 	pid = fork();	
 
 	//check which process we are (child/parent)		
 	if(pid){ //parent process
-		printf("PAPA %d: I WAIT FOR CHILD TO DIE! %s\n",getpid(),sleepy);
+		printf("PAPA #%x: I WAIT FOR CHILD TO DIE! %s\n",getpid(),sleepy);
 		wait(&status); 
-		printf("PAPA %d: I BURY MY CHILD'S BODY!\n", getpid());
+		printf("PAPA #%x: I BURY MY CHILD'S BODY!\n", getpid());
 	}
 	else{
-		printf("CHILD %d STARTS DOING WORK! %s\n",getpid(),work_msg);
+		printf("CHILD #%x STARTS DOING WORK! %s\n",getpid(),work_msg);
 		//create testpath 1, then run while loop
 		//once the exec call actually happens, we're done
+
+		nprintc('~',10,0);
+		printf("CHILD OUTPUT");
+		nprintc('~',10,1);
+
 		cmd_path[0] = 0;
 		strcat(cmd_path, path_tokens[0]);
-		strcat(cmd_path, "/");
+		if(cmd_path[strlen(cmd_path)-1] != '/'){
+			strcat(cmd_path, "/");
+		}
 		strcat(cmd_path, tokens[0]);
 		//retry inside a while loop
 		z = 0;
-		while(execl(cmd_path,arg_v_arr[0]) && *path_tokens[z]){ 
-			z++;			
-			printf("%d failed on: `%s`\n",z, cmd_path);
+		while(execve(cmd_path,arg_v_arr, env) && *path_tokens[z]){ 
+			z++;
+			if(DEBUGGING){			
+				printf("%2d failed on: `%s`\n",z, cmd_path);
+			}
 			memset(cmd_path, 0, STR_LEN);
 			strcat(cmd_path, path_tokens[z]);
-                	strcat(cmd_path, "/");
+			if(cmd_path[strlen(cmd_path)-1] != '/'){
+                        	strcat(cmd_path, "/");
+                	}
                 	strcat(cmd_path, tokens[0]);
 		}
 
@@ -162,11 +177,13 @@ int main(int argc, char *argv[], char *env[])
 {
 	init();
 	while(1){
-		printf("Starting new shell loop!\n");
+		nprintc('>', 10, 0);
+		printf("Starting new shell loop!");
+		nprintc('<', 10, 1);
 		mem_wipe();			//reset mem space
 		user_input();			//get input
 		process_string();		//tokenize input
-		printf("input: '%s'\n", line);	//DEBUG: print input
+		if(DEBUGGING) { printf("input: '%s'\n", line); }
 		if(check_cd()){ continue; } //check to run cd
 		if(check_exit()) { break; } //this isn't really necessary
 		handle_fork(env);

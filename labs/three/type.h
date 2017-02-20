@@ -8,7 +8,7 @@
 
 #define STR_LEN 256
 #define MAX_TOK 64
-#define DEBUGGING 1 
+#define DEBUGGING 0 
 
 char *path_tokens[MAX_TOK];	//hold tokens with paths
 char line[STR_LEN];		//hold user input line
@@ -22,6 +22,12 @@ void nprintc(char c, int n, int newline){
 		printf("%c",c); }
 	if(newline){
 		printf("\n"); }
+}
+
+char * makestring(char *s){
+	int l = strlen(s);
+	char *strtmp = (char*) malloc( l*sizeof(char) + 1);
+	strcpy(strtmp, s);
 }
 
 
