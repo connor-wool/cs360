@@ -135,7 +135,8 @@ int handle_fork(char *env){
 	//check which process we are (child/parent)		
 	if(pid){ //parent process
 		printf("PAPA #%x: I WAIT FOR CHILD TO DIE! %s\n",getpid(),sleepy);
-		wait(&status); 
+		wait(&status);
+		nprintc('~',32,1); 
 		printf("PAPA #%x: I BURY MY CHILD'S BODY!\n", getpid());
 	}
 	else{
