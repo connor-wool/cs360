@@ -88,6 +88,40 @@ int check_exit(TOKBOX *tb){
 	return 0;
 }
 
+//check and redirect IO if needed
+int redirect_io(TOKBOX *tb){
+	int infile_index = 0;
+	int outfile_index = 0;
+	int i = 0;
+	while(i < tb->n_tokens){
+		if(strcmp(tb->tokens[i], "<") == 0){
+			infile_index = i;
+		}
+		if(strcmp(tb->tokens[i], ">") == 0){
+			outfile_index = i;
+		}
+		if(strcmp(tb->tokens[i], ">>") == 0){
+			outfile_index = i;
+		}
+		i++;
+	}
+	
+	if(infile_index > 0){
+		close(0);
+		fopen(tb->tokens[infile_index+1], "r");
+	}
+	if(outfile_index > 0){
+		close(1);
+		if(strcmp(tb->tokens[outfile_index],">")==0){
+			fopen(tb->tokens[outfile_index+1],"w");
+		}
+		else{
+			fopen(tb->tokens[outfile_index+1],"a");
+		}
+	}
+
+}
+
 int handle_fork(TOKBOX *tb){
 	int pid, status, i;
 	char cmd_path[STR_LEN];
@@ -116,6 +150,8 @@ int handle_fork(TOKBOX *tb){
 		printf("Child(%x) starts work %s\n",getpid(),work_msg);
 		}
 
+		redirect_io(tb);
+	
 		cmd_path[0] = 0;
 
 		strcat(cmd_path, path_tokens[0]);

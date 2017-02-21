@@ -33,6 +33,7 @@ char * makestring(char *s){
 	int l = strlen(s);
 	char *strtmp = (char*) malloc( l*sizeof(char) + 1);
 	strcpy(strtmp, s);
+	return strtmp;
 }
 
 
