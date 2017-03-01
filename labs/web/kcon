@@ -1,0 +1,4 @@
+#! /bin/bash
+
+ssh wool@cs360.eecs.wsu.edu
+
