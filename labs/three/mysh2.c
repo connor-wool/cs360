@@ -105,10 +105,13 @@ int redirect_io(TOKBOX *tb){
 		}
 		i++;
 	}
-	
+
+	//redirect io, remove tokens, adjust struct values	
 	if(infile_index > 0){
 		close(0);
 		fopen(tb->tokens[infile_index+1], "r");
+		remove_from_tokbox(tb, infile_index+1);
+		remove_from_tokbox(tb, infile_index);
 	}
 	if(outfile_index > 0){
 		close(1);
@@ -118,6 +121,8 @@ int redirect_io(TOKBOX *tb){
 		else{
 			fopen(tb->tokens[outfile_index+1],"a");
 		}
+		remove_from_tokbox(tb, outfile_index +1);
+		remove_from_tokbox(tb, outfile_index);
 	}
 
 }

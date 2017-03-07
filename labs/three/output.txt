@@ -1,3 +1,0 @@
-Connor's cool shell, wow!
-ubuntu:/home/connor/code/cs360/labs/three$ input: whats up?
-

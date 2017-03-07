@@ -36,6 +36,19 @@ char * makestring(char *s){
 	return strtmp;
 }
 
+void remove_from_tokbox(TOKBOX *tb, int index){
+        int n = tb->n_tokens;
+        if(index < n){
+                free(tb->tokens[index]);
+        }
+        int i = index;
+        while(i < n){
+                tb->tokens[i] = makestring(tb->tokens[i+1]);
+                i++;
+        }
+        tb->tokens[i] = 0;
+        tb->n_tokens -= 1;
+}
 
 
 
