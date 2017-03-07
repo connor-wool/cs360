@@ -1,0 +1,14 @@
+#! /bin/bash
+
+#test making a variable
+VAL1=$1
+
+echo $VAL1
+
+func(){
+	echo "this is a function in bash"
+	echo "the following should print 'floppy'"
+	echo $1
+}
+
+func "floppy"

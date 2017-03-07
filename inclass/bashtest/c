@@ -1,0 +1,16 @@
+#! /bin/bash
+
+cd ~/cs360/labs/three
+echo -n "current working directory is: "
+pwd
+
+for NAME in $(ls)
+	do
+		if [ -f $NAME ] ; then
+			echo $NAME is a file
+		fi
+		if [ -d $NAME ]; then
+			echo $NAME is a dir
+		fi
+	done
+

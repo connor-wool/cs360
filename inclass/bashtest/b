@@ -1,0 +1,17 @@
+#! /bin/bash
+#-----------everything is a string!---------
+
+echo A
+echo $A
+A="This is fun!"
+echo $A
+
+B=A
+echo $B
+
+B=$A
+echo $B
+
+echo -n "enter yes or no: "
+read ANS
+echo $ANS

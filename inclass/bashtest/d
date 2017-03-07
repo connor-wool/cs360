@@ -1,0 +1,15 @@
+#! /bin/bash
+
+#this might get messy.....
+I=0
+
+mkdir sandbox
+cd sandbox
+
+while [ $I != 10000 ]
+do
+	echo $I
+	mkdir dir$I
+	I=$(expr $I + 1)
+done
+
