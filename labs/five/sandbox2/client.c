@@ -92,6 +92,11 @@ main(int argc, char *argv[ ])
 
 	char *test_string = makestring(line);
 	char *command_string = makestring(strtok(test_string, " "));
+	char *temp_fn; // file_name_string;
+	
+	//if(temp_fn = strtok(0, " ")){
+	//	file_name_string = makestring(temp_fn);
+	//}
 	char *file_name_string = makestring(strtok(0, " "));
 
 	//if case for get
@@ -106,14 +111,16 @@ main(int argc, char *argv[ ])
 		while(n < 1){
 			n = read(server_sock, ans, MAX);
 		}
-		
+	
+		printf("answer from server: `%s`\n", ans);	
+	
 		//if reply of (BAD) then retry command input
 		
 		if(strcmp(ans, "BAD")==0){
 			continue;
 		}
 		int file_size = 0;
-		sscanf(ans, "%d", file_size);		
+		sscanf(ans, "%d", &file_size);		
 
 		//create count=0
 		int count = 0;
@@ -137,15 +144,43 @@ main(int argc, char *argv[ ])
 		//close file with "filename"
 	}
 	//if case for put
-	//if case for exit
-    
-	// Send ENTIRE line to server
-    n = write(server_sock, line, MAX);
-    printf("client: wrote n=%d bytes; line=(%s)\n", n, line);
+        if ((strcmp(command_string, "put") == 0) && (file_name_string != 0)){
+		//send put command to server
+                n = write(server_sock, line, MAX);
+                printf("client: wrote n=%d bytes; line=(%s)\n",n,line);
 
-    // Read a line from sock and show it
-    n = read(server_sock, ans, MAX);
-    printf("client: read  n=%d bytes; echo=(%s)\n",n, ans);
+		//create file path		
+		char file_path[256] = {0};
+                getcwd(file_path, 256);
+                strcat(file_path, "/");
+                strcat(file_path, file_name_string);
+                //int fd = open(file_path, O_WRONLY | O_CREAT);
+		
+		struct stat sb;
+		int file_size = 0;
+		if (stat (file_path, &sb) == 0)
+			file_size = sb.st_size;
+		else
+			file_size = 0;
+
+		char sock_buf[256] = {0};
+		sprintf(sock_buf, "%d", file_size);
+		write(server_sock, sock_buf, 256);
+
+		int fd = open(file_path, O_RDONLY);
+		while (n = read(fd, sock_buf, 256)){
+			write(server_sock, sock_buf, n);
+		}
+		close(fd);
+	}
+
+	//if case for exit
+	if(strcmp(command_string, "quit") == 0){
+		char sock_buf[256] = {0};
+		sprintf(sock_buf, "quit");
+		n = write(server_sock, sock_buf, 256);
+		exit(0);
+	}    
   }
 }
 
